@@ -17,9 +17,9 @@ with st.container():
             margin: auto;
             background-color: #f9f9f9;">
             <h2>Citrinos</h2>
-            <p><a href="{iki_link}" target="_blank">IKI</a></p>
-            <p><a href="{rimi_link}" target="_blank">RIMI</a></p>
-            <p><a href="{maxima_link}" target="_blank">MAXIMA</a></p>
+            <p><a href="{iki_link}" target="_blank">Citrinos IKI</a></p>
+            <p><a href="{rimi_link}" target="_blank">Citrinos RIMI</a></p>
+            <p><a href="{maxima_link}" target="_blank">Citrinos MAXIMA</a></p>
         </div>
         """,
         unsafe_allow_html=True
