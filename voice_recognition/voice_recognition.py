@@ -5,9 +5,8 @@ import numpy as np
 import tempfile
 import wave
 
-
-st.info("Įkeliama Whisper AI modelis... (gali užtrukti kelias sekundes)")
-model = whisper.load_model("small")  # Options: "tiny", "base", "small", "medium", "large"
+st.info("Įkeliama balso atpažinimo funkcija (gali užtrukti kelias sekundes)")
+model = whisper.load_model("small")
 
 def record_audio(duration=3, samplerate=16000):
     st.info("🎙️ Kalbėkite dabar...")
@@ -22,7 +21,6 @@ def record_audio(duration=3, samplerate=16000):
             wf.writeframes(recording.tobytes())
         return temp_audio.name
 
-
 def recognize_speech_whisper():
     audio_file = record_audio()
     st.info("🔄 Apdorojama kalba...")
@@ -30,8 +28,12 @@ def recognize_speech_whisper():
     result = model.transcribe(audio_file, language="lt")
     return result["text"].strip()
 
+st.title("🎙️ Pigiausių prekių paieška balsu")
 
-st.title("🎙️ Pigiausių prekių paieška su balsu (Whisper AI)")
 if st.button("🎤 Pasakyti prekę"):
     spoken_text = recognize_speech_whisper()
-    st.write(f"✅ Atpažinta kalba: **{spoken_text}**")
+
+    edited_text = st.text_input("Atpažintas žodis:", value=spoken_text)
+
+    #if edited_text:
+        #scrapinimas
