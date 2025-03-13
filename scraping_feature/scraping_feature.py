@@ -9,6 +9,7 @@ class ScrapingRequest:
         self.cheapest_item = None
         self.item = item
         self.error_message = None
+        # TODO: Add functionality to also return `item_url` from this class
 
     
     def scrape_price(self):
@@ -61,7 +62,6 @@ class ScrapingRequest:
         self.cheapest_item = found_items[0]
 
         return self
-
 
 
 
