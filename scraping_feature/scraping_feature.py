@@ -1,7 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 
+from .scrapers.iki_scraper import IkiScraper
+from .scrapers.maxima_scraper import MaximaScraper
 from .scrapers.rimi_scraper import RimiScraper
+
+
 
 
 class ScrapingRequest:
@@ -16,9 +20,19 @@ class ScrapingRequest:
     def scrape_price(self):
         match self.shop_name:
             case "Maxima":
-                pass
+                result = MaximaScraper()
+                self.item_name, self.cheapest_item, self.item_url, self.message = result.scrape(self.item)
+                if self.item_name and self.cheapest_item and self.item_url and self.message:
+                    return self
+
+                return None
             case "IKI":
-                pass            
+                result = IkiScraper()
+                self.item_name, self.cheapest_item, self.item_url, self.message = result.scrape(self.item)
+                if self.item_name and self.cheapest_item and self.item_url and self.message:
+                    return self
+
+                return None
             case "Rimi":
                 result = RimiScraper()
                 self.item_name, self.cheapest_item, self.item_url, self.message = result.scrape(self.item)

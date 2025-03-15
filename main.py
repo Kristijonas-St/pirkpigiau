@@ -3,8 +3,8 @@ import streamlit as st
 from scraping_feature.scraping_feature import ScrapingRequest
 from speech_response_feature.speech_response import say_formatted_response
 
-shop_name = "Rimi"
-item_to_search = "bananai"
+shop_name = "IKI"
+item_to_search = "apelsinai"
 
 st.title("Rimi.lt pigiausios prekės")
 
