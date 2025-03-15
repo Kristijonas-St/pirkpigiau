@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from fuzzywuzzy import fuzz
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 
@@ -40,8 +41,7 @@ class RimiScraper:
             products = soup.find_all('li', class_='product-grid__item')
 
             for product in products:
-                if item.lower() in product.text.lower():
-                    
+                if fuzz.partial_ratio(item.lower(), product.text.lower()) > 80:
                     item_name = self.extract_item_name(product)
                     euro, cents = self.extract_price(product)
                     price = f"{euro}.{cents}"
