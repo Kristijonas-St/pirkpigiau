@@ -30,10 +30,21 @@ def recognize_speech_whisper():
 
 st.title("🎙️ Pigiausių prekių paieška balsu")
 
+if "recognized_text" not in st.session_state:
+    st.session_state.recognized_text = ""
+
+if "scrape_result" not in st.session_state:
+    st.session_state.scrape_result = ""
+
 if st.button("🎤 Pasakyti prekę"):
-    spoken_text = recognize_speech_whisper()
+    st.session_state.recognized_text = recognize_speech_whisper()
+    #st.session_state.scrape_result = scrape_price(st.session_state.recognized_text)
 
-    edited_text = st.text_input("Atpažintas žodis:", value=spoken_text)
+if st.session_state.recognized_text:
+    edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
 
-    #if edited_text:
-        #scrapinimas
+    if edited_text != st.session_state.recognized_text:
+        pass
+        #st.session_state.scrape_result = scrape_price(edited_text)
+
+st.write(st.session_state.scrape_result)
