@@ -21,17 +21,13 @@ urls = [
 class RimiScraper:
     def scrape(self, item):
         for url in urls:
-            result = self.scrape_based_on_url(item, url)
-            if result:
-                return result
-            else:
-                print(f"{item} not found in any category.")
-                return None
+            price, item_url = self.scrape_based_on_url(item, url)
+            if price and item_url:
+                return price, item_url, 'success'
+            return None
         
 
     def scrape_based_on_url(self, item, url):
-        base_url = "https://www.rimi.lt"
-        
         for i in range(1, 5):  
             paginated_url = url.replace('currentPage=1', f'currentPage={i}')
             response = requests.get(paginated_url, headers=headers)
@@ -46,32 +42,26 @@ class RimiScraper:
             for product in products:
                 if item.lower() in product.text.lower():
                     
-                    if product.find('div', class_='card__price-wrapper -has-discount'):
-                        print(f"NUOLAIDA: {product.text.replace('\n', '').strip()}")
-                        price_tag = product.find('div', class_='price-tag card__price')
-                        
-                        euro = price_tag.find('span').text.strip()
-                        cents = price_tag.find('sup').text.strip()
+                    euro, cents = self.extract_price(product)
+                    price = f"{euro}.{cents}"
+                    item_url = self.extract_hyperlink(product)
+               
+                    return price, item_url
+                
+            return None
+    
+    def extract_price(self, product):
+        price_tag = product.find('div', class_='price-tag card__price')
+        euro = price_tag.find('span').text.strip()
+        cents = price_tag.find('sup').text.strip()
 
-                        print(f"NUOLAIDA: {euro} .... {cents}")
-
-
-                    elif product.find('div', class_='card__price-wrapper'):
-                        print(f"{product.text.replace('\n', '').strip()}")  
-                        price_tag = product.find('div', class_='price-tag card__price')
-                        
-                        euro = price_tag.find('span').text.strip()
-                        cents = price_tag.find('sup').text.strip()
-
-                        print(f"be nuolaidos: {euro} .... {cents}")
-
-
-                    
-                    link_tag = product.find('a', class_='js-gtm-eec-product-click')
-                    
-                    if link_tag and 'href' in link_tag.attrs:
-                        item_url = base_url + link_tag.attrs['href']                   
-                    
-                    
-                    return product
+        return euro, cents
+    
+    def extract_hyperlink(self, product):
+        base_url = "https://www.rimi.lt"
+        link_tag = product.find('a', class_='js-gtm-eec-product-click')
+        if link_tag and 'href' in link_tag.attrs:
+            return base_url + link_tag.attrs['href']    
         return None
+
+
