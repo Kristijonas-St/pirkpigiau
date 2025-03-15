@@ -4,9 +4,9 @@ from scraping_feature.scraping_feature import ScrapingRequest
 from speech_response_feature.speech_response import say_formatted_response
 
 shop_name = "Rimi"
-item_to_search = "bananai"
+item_to_search = "itrinos"
 
-st.title("Rimi.lt pigiausios prekės")
+st.title(f"{shop_name}.lt pigiausios prekės")
 
 if st.button("Pasakykite prekę"):
     request = ScrapingRequest(shop_name, item_to_search)
