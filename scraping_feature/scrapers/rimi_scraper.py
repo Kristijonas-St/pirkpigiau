@@ -21,9 +21,9 @@ urls = [
 class RimiScraper:
     def scrape(self, item):
         for url in urls:
-            price, item_url = self.scrape_based_on_url(item, url)
-            if price and item_url:
-                return price, item_url, 'success'
+            item_name, price, item_url = self.scrape_based_on_url(item, url)
+            if item_name and price and item_url:
+                return item_name, price, item_url, 'success'
             return None
         
 
@@ -42,14 +42,19 @@ class RimiScraper:
             for product in products:
                 if item.lower() in product.text.lower():
                     
+                    item_name = self.extract_item_name(product)
                     euro, cents = self.extract_price(product)
                     price = f"{euro}.{cents}"
                     item_url = self.extract_hyperlink(product)
                
-                    return price, item_url
+                    return item_name, price, item_url
                 
             return None
     
+    def extract_item_name(self, product):
+        name_tag = product.find('a', class_='card__url js-gtm-eec-product-click')
+        return name_tag.attrs['aria-label']
+
     def extract_price(self, product):
         price_tag = product.find('div', class_='price-tag card__price')
         euro = price_tag.find('span').text.strip()

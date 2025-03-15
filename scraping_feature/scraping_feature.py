@@ -11,6 +11,7 @@ class ScrapingRequest:
         self.item_url = None
         self.cheapest_item = None
         self.message = None
+        self.item_name = None
 
     def scrape_price(self):
         match self.shop_name:
@@ -20,9 +21,8 @@ class ScrapingRequest:
                 pass            
             case "Rimi":
                 result = RimiScraper()
-                self.cheapest_item, self.item_url, self.message = result.scrape(self.item)
-                if self.cheapest_item and self.item_url and self.message:
-                    print(f"{self.item} PRICE: {self.cheapest_item}, URL: {self.item_url}")
+                self.item_name, self.cheapest_item, self.item_url, self.message = result.scrape(self.item)
+                if self.item_name and self.cheapest_item and self.item_url and self.message:
                     return self
                 
                 return None
