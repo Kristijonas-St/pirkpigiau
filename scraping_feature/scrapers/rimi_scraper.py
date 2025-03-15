@@ -42,7 +42,6 @@ class RimiScraper:
 
             for product in products:
                 if fuzz.partial_ratio(item.lower(), product.text.lower()) > 80:
-                    
                     item_name = self.extract_item_name(product)
                     euro, cents = self.extract_price(product)
                     price = f"{euro}.{cents}"
