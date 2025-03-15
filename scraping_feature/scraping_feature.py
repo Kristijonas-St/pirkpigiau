@@ -7,7 +7,7 @@ class ScrapingRequest:
     def __init__(self, shop_name, item):
         self.shop_name = shop_name
         self.item = item
-        self.shop_url = None
+        self.item_url = None
         self.cheapest_item = None
         self.error_message = None
 
@@ -18,11 +18,16 @@ class ScrapingRequest:
             case "IKI":
                 pass            
             case "Rimi":
-                scraper = RimiScraper()
-                scraper.scrape(self.item)
+                result = RimiScraper()
+                result.scrape(self.item)
             case _:
                 print("Unknown error")
 
 
-scrape = ScrapingRequest('Rimi', 'Nektarinai')
-scrape.scrape_price()
+
+scrape1 = ScrapingRequest('Rimi', 'Fasuoti sunokę avokadai')
+scrape1.scrape_price()
+
+scrape2 = ScrapingRequest('Rimi', 'Bananai')
+scrape2.scrape_price()
+

@@ -24,10 +24,14 @@ class RimiScraper:
             result = self.scrape_based_on_url(item, url)
             if result:
                 return result
-        print(f"{item} not found in any category.")
-        return None
-    
+            else:
+                print(f"{item} not found in any category.")
+                return None
+        
+
     def scrape_based_on_url(self, item, url):
+        base_url = "https://www.rimi.lt"
+        
         for i in range(1, 5):  
             paginated_url = url.replace('currentPage=1', f'currentPage={i}')
             response = requests.get(paginated_url, headers=headers)
@@ -41,7 +45,33 @@ class RimiScraper:
 
             for product in products:
                 if item.lower() in product.text.lower():
-                    print(f"✅ Found {item} on page {i}: {product.text.replace('\n', '').strip()}")
-                    return product
+                    
+                    if product.find('div', class_='card__price-wrapper -has-discount'):
+                        print(f"NUOLAIDA: {product.text.replace('\n', '').strip()}")
+                        price_tag = product.find('div', class_='price-tag card__price')
+                        
+                        euro = price_tag.find('span').text.strip()
+                        cents = price_tag.find('sup').text.strip()
 
+                        print(f"NUOLAIDA: {euro} .... {cents}")
+
+
+                    elif product.find('div', class_='card__price-wrapper'):
+                        print(f"{product.text.replace('\n', '').strip()}")  
+                        price_tag = product.find('div', class_='price-tag card__price')
+                        
+                        euro = price_tag.find('span').text.strip()
+                        cents = price_tag.find('sup').text.strip()
+
+                        print(f"be nuolaidos: {euro} .... {cents}")
+
+
+                    
+                    link_tag = product.find('a', class_='js-gtm-eec-product-click')
+                    
+                    if link_tag and 'href' in link_tag.attrs:
+                        item_url = base_url + link_tag.attrs['href']                   
+                    
+                    
+                    return product
         return None
