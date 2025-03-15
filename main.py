@@ -16,11 +16,6 @@ if st.button("Pasakykite prekę"):
         st.write("HORRIBLE ERROR")
     elif request.cheapest_item:
         st.markdown(f"{shop_name.upper()}: Pigiausias variantas: [{data.item_name}]({data.item_url}) už {data.cheapest_item}", unsafe_allow_html=True)
-        say_formatted_response(data.item_name, shop_name, data.cheapest_item)        
+        say_formatted_response(data.item_name, shop_name, data.cheapest_item)
     else:
         st.write("Nepavyko rasti prekės")
-
-
-
-
-

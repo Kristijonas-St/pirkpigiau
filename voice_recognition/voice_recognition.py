@@ -43,14 +43,12 @@ class StreamLitOutputEditor:
     def display_scrape_result(self):
         st.title("🎙️ Pigiausių prekių paieška balsu")
         if st.button("🎤 Pasakyti prekę"):
-            st.session_state.recognized_text = self.recognize_speech_whisper()
-            #st.session_state.scrape_result = scrape_price(st.session_state.recognized_text)
+            st.session_state.recognized_text = self.voice_recognizer.recognize_speech_whisper()
 
         if st.session_state.recognized_text:
             edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
 
             if edited_text != st.session_state.recognized_text:
                 pass
-                #st.session_state.scrape_result = scrape_price(edited_text)
 
         st.write(st.session_state.scrape_result)
