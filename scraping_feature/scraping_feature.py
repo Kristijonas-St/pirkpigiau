@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-from scrapers.rimi_scraper import RimiScraper
+from .scrapers.rimi_scraper import RimiScraper
+
 
 class ScrapingRequest:
     def __init__(self, shop_name, item):
@@ -29,10 +30,4 @@ class ScrapingRequest:
                 print("Unknown error")
 
 
-
-scrape1 = ScrapingRequest('Rimi', 'Fasuoti sunokę avokadai')
-scrape1.scrape_price()
-
-scrape2 = ScrapingRequest('Rimi', 'Bananai')
-scrape2.scrape_price()
 

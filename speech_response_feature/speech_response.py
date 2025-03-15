@@ -32,6 +32,9 @@ def form_price_and_shop_cases(price_value, shop_name):
 
     if shop_name == "Maxima":
         shop_case = "Maximoje"
+    else:
+        shop_case = shop_name
+
 
     return euro_case, cent_case, shop_case
 
