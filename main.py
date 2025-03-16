@@ -3,19 +3,32 @@ from scraping_feature.scraping_feature import ScrapingRequest
 from speech_response_feature.speech_response import say_formatted_response
 from voice_recognition.voice_recognition import StreamLitOutputEditor
 
-def perform_scraping(item_name):
-    request = ScrapingRequest(shop_name, item_name)
-    data = request.scrape_price()
-    if not data:
-        return "Nepavyko rasti prekės."
-    elif request.cheapest_item:
-        result = f"{shop_name.upper()}: Pigiausias variantas: [{data.item_name}]({data.item_url}) už {data.cheapest_item}"
-        say_formatted_response(data.item_name, shop_name, data.cheapest_item)
-        return result
-    return "Nepavyko rasti prekės."
+
+def perform_scraping(item_name, shops):
+    data = []
+    results = dict()
+    index = 0
+    for shop in shops:
+        request = ScrapingRequest(shop, item_name)
+        data.append(request.scrape_price())
+        if data[index]:
+            message = f"{shop.upper()}: Pigiausias variantas: [{data[index].item_name}]({data[index].item_url}) už "
+            price = float(data[index].cheapest_item)
+            results[message] = price
+            say_formatted_response(data[index].item_name, shop, data[index].cheapest_item)
+        else:
+            message = f"{shop.upper()}: Prekė {item_name} nerasta."
+            price = float('inf')
+            results[message] = price
+        index += 1
+
+    sorted_results = sorted(results.items(), key=lambda x: x[1])
+
+    return sorted_results
+
 
 app = StreamLitOutputEditor()
-shop_name = "Rimi"
+shops = ["Rimi", "Maxima", "IKI"]
 st.title("🎙️ Pigiausių prekių paieška balsu")
 
 if "recognized_text" not in st.session_state:
@@ -27,19 +40,29 @@ try:
     if st.button("🎤 Pasakyti prekę"):
         st.session_state.recognized_text = app.voice_recognizer.recognize_speech_whisper()
         if st.session_state.recognized_text:
-            st.session_state.scrape_result = perform_scraping(st.session_state.recognized_text)
+            st.session_state.scrape_result = perform_scraping(st.session_state.recognized_text, shops)
 
     if st.session_state.recognized_text:
         edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
         if edited_text != st.session_state.recognized_text:
             st.session_state.recognized_text = edited_text
-            st.session_state.scrape_result = perform_scraping(edited_text)
+            st.session_state.scrape_result = perform_scraping(edited_text, shops)
 
-    st.markdown(st.session_state.scrape_result, unsafe_allow_html=True)
+    for result in st.session_state.scrape_result:
+        if result[1] != float('inf'):
+            st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
+        else:
+            st.markdown(f"{result[0]}", unsafe_allow_html=True)
+
 except Exception as e:
-    st.error("Nepavyko rasti prekės :( Pataisykite atpažintą žodį arba pabandykite dar kartą.")
+    st.error("Klaida :( Pataisykite atpažintą žodį arba pabandykite dar kartą.")
     edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
     if edited_text != st.session_state.recognized_text:
         st.session_state.recognized_text = edited_text
         st.session_state.scrape_result = perform_scraping(edited_text)
-    st.markdown(st.session_state.scrape_result, unsafe_allow_html=True)
+
+    for result in st.session_state.scrape_result:
+        if result[1] != float('inf'):
+            st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
+        else:
+            st.markdown(f"{result[0]}", unsafe_allow_html=True)
