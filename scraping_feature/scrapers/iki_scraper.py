@@ -1,4 +1,5 @@
 import requests
+import streamlit
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 
@@ -11,13 +12,14 @@ class IkiScraper:
     def scrape(self, item):
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
-            return None
+            return None, None, None, None
 
         soup = BeautifulSoup(response.text, 'html.parser')
-        product_name, price = self.get_cheapest_product(item, soup)
+        if self.get_cheapest_product(item, soup):
+            product_name, price = self.get_cheapest_product(item, soup)
+            return product_name, price, url, 'success'
 
-        return product_name, price, url, 'success'
-
+        return None, None, None, None
     def extract_containers_of_products_w_pricetags(self, soup):
         product_containers = soup.find_all('div', class_='d-flex flex-column justify-content-between position-relative h-100')
         product_containers_w_pricetags = []
@@ -51,10 +53,11 @@ class IkiScraper:
 
         return mapping
 
+
     def find_matching_products(self, item, mapping):
         found_items = []
         for product_name in mapping:
-            if fuzz.partial_ratio(item.lower(), product_name) > 80:
+            if fuzz.partial_ratio(item.lower(), product_name) > 75:
                 found_items.append((product_name, mapping[product_name]))
 
         if not found_items:
@@ -66,6 +69,7 @@ class IkiScraper:
         product_containers = self.extract_containers_of_products_w_pricetags(soup)
         mapping = self.get_iki_product_list(product_containers)
         found_items = self.find_matching_products(item, mapping)
-
+        if not found_items:
+            return None
         found_items.sort(key=lambda x: float(x[1]))
         return found_items[0][0], found_items[0][1]

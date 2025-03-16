@@ -25,7 +25,7 @@ class RimiScraper:
             item_name, price, item_url = self.scrape_based_on_url(item, url)
             if item_name and price and item_url:
                 return item_name, price, item_url, 'success'
-            return None
+            return None, None, None, None
         
 
     def scrape_based_on_url(self, item, url):
@@ -35,13 +35,13 @@ class RimiScraper:
 
             if response.status_code != 200:
                 print(f"Failed to fetch page {i} (Status {response.status_code})")
-                return None
+                return None, None, None
 
             soup = BeautifulSoup(response.text, 'html.parser')
             products = soup.find_all('li', class_='product-grid__item')
 
             for product in products:
-                if fuzz.partial_ratio(item.lower(), product.text.lower()) > 80:
+                if fuzz.partial_ratio(item.lower(), product.text.lower()) > 75:
                     item_name = self.extract_item_name(product)
                     euro, cents = self.extract_price(product)
                     price = f"{euro}.{cents}"
@@ -49,7 +49,7 @@ class RimiScraper:
                
                     return item_name, price, item_url
                 
-            return None
+            return None, None, None
     
     def extract_item_name(self, product):
         name_tag = product.find('a', class_='card__url js-gtm-eec-product-click')
