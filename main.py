@@ -1,7 +1,7 @@
 import streamlit as st
 from scraping_feature.scraping_feature import ScrapingRequest
 from speech_response_feature.speech_response import say_formatted_response
-from voice_recognition.voice_recognition import StreamLitOutputEditor
+from voice_recognition.voice_recognition import VoiceRecognizer
 
 
 def perform_scraping(item_name, shops):
@@ -27,7 +27,7 @@ def perform_scraping(item_name, shops):
     return sorted_results
 
 
-app = StreamLitOutputEditor()
+app = VoiceRecognizer()
 shops = ["Rimi", "Maxima", "IKI"]
 st.title("🎙️ Pigiausių prekių paieška balsu")
 
@@ -38,7 +38,7 @@ if "scrape_result" not in st.session_state:
 
 try:
     if st.button("🎤 Pasakyti prekę"):
-        st.session_state.recognized_text = app.voice_recognizer.recognize_speech_whisper()
+        st.session_state.recognized_text = app.recognize_speech_whisper()
         if st.session_state.recognized_text:
             st.session_state.scrape_result = perform_scraping(st.session_state.recognized_text, shops)
 

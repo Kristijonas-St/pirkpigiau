@@ -30,25 +30,3 @@ class VoiceRecognizer:
 
         result = model.transcribe(audio_file, language="lt")
         return result["text"].strip()
-
-class StreamLitOutputEditor:
-    def __init__(self):
-        self.voice_recognizer = VoiceRecognizer()
-
-        if "recognized_text" not in st.session_state:
-            st.session_state.recognized_text = ""
-
-        if "scrape_result" not in st.session_state:
-            st.session_state.scrape_result = ""
-    def display_scrape_result(self):
-        st.title("🎙️ Pigiausių prekių paieška balsu")
-        if st.button("🎤 Pasakyti prekę"):
-            st.session_state.recognized_text = self.voice_recognizer.recognize_speech_whisper()
-
-        if st.session_state.recognized_text:
-            edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
-
-            if edited_text != st.session_state.recognized_text:
-                pass
-
-        st.write(st.session_state.scrape_result)
