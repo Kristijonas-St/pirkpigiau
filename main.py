@@ -55,14 +55,17 @@ try:
             st.markdown(f"{result[0]}", unsafe_allow_html=True)
 
 except Exception as e:
-    st.error("Klaida :( Pataisykite atpažintą žodį arba pabandykite dar kartą.")
+    st.error(f"Klaida :( Pataisykite atpažintą žodį arba pabandykite dar kartą. Klaidos pranešimas: {str(e)}")
+
     edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
+
     if edited_text != st.session_state.recognized_text:
         st.session_state.recognized_text = edited_text
-        st.session_state.scrape_result = perform_scraping(edited_text)
+        st.session_state.scrape_result = perform_scraping(edited_text, shops)
 
-    for result in st.session_state.scrape_result:
-        if result[1] != float('inf'):
-            st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
-        else:
-            st.markdown(f"{result[0]}", unsafe_allow_html=True)
+    if st.session_state.scrape_result:
+        for result in st.session_state.scrape_result:
+            if result[1] != float('inf'):
+                st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
+            else:
+                st.markdown(f"{result[0]}", unsafe_allow_html=True)
