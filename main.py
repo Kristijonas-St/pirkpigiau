@@ -36,7 +36,16 @@ if "recognized_text" not in st.session_state:
 if "scrape_result" not in st.session_state:
     st.session_state.scrape_result = ""
 
+input_method = st.radio("Pasirinkite įvedimo būdą:", ("Įvesti ranka", "Įrašyti balsu"))
+
 try:
+
+    if input_method == "Įvesti ranka":
+        st.session_state.recognized_text = st.text_input("Įveskite prekės pavadinimą:",
+                                                         value=st.session_state.recognized_text)
+        if st.session_state.recognized_text:
+            st.session_state.scrape_result = perform_scraping(st.session_state.recognized_text, shops)
+
     if st.button("🎤 Pasakyti prekę"):
         st.session_state.recognized_text = app.recognize_speech_whisper()
         if st.session_state.recognized_text:
