@@ -1,9 +1,9 @@
 import streamlit as st
-import whisper
 import sounddevice as sd
 import numpy as np
 import tempfile
 import wave
+import whisper
 
 st.info("Įkeliama balso atpažinimo funkcija (gali užtrukti kelias sekundes)")
 model = whisper.load_model("small")
@@ -30,3 +30,4 @@ class VoiceRecognizer:
 
         result = model.transcribe(audio_file, language="lt")
         return result["text"].strip()
+
