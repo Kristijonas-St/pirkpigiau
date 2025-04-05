@@ -29,4 +29,6 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings -q
+          pytest --maxfail=1 --disable-warnings -q speech_response_feature/t_response.py
+          
+          
