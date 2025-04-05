@@ -1,3 +1,7 @@
 pytest
 streamlit
 openai-whisper
+sounddevice
+numpy
+tempfile
+wave
