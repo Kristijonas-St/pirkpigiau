@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubunt-latest
+    runs-on: ubunti-latest
 
     steps:
       - name: Checkout repo
