@@ -3,7 +3,6 @@ name: Speech Response CI
 on:
   push:
     branches:
-      - main
       - feature-speech-response
     pull_request:
       branches:
