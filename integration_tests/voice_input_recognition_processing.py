@@ -6,11 +6,10 @@ import whisper
 
 @patch.object(whisper.Whisper, 'transcribe')
 @patch('voice_recognition.voice_recognition.VoiceRecognizer.record_audio', return_value="test_audio.wav")
-@patch('requests.get')  # Mocking the scraping request
-@patch('scraping_feature.scraping_feature.RimiScraper.scrape')  # Mocking scrape method
+@patch('requests.get')
+@patch('scraping_feature.scraping_feature.RimiScraper.scrape')
 def test_voice_recognition_and_scraping(mock_scrape, mock_get, mock_record_audio, mock_transcribe):
-    """Test voice recognition and scraping in one integrated test."""
-    mock_scrape.return_value = ("pomidorai", 1.99, "some_url", "Test message")
+    mock_scrape.return_value = ("pomidorai", 1.29 , "URL", "Succesful")
     mock_transcribe.return_value = {"text": "pomidorai"}
     recognizer = VoiceRecognizer()
 
