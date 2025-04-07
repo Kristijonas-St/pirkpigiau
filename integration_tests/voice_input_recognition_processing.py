@@ -16,9 +16,9 @@ def test_voice_recognition_and_scraping(mock_scrape, mock_get, mock_record_audio
     start_time = time.time()
     result_voice = recognizer.recognize_speech_whisper()
     scraping_result = ScrapingRequest("Rimi", result_voice).scrape_price()
-    assert scraping_result is not None, f"Scraping returned None"
     end_time = time.time()
 
+    assert scraping_result is not None, f"Scraping returned None"
     assert result_voice == "pomidorai", f"Recognized {result_voice}"
     mock_record_audio.assert_called_once()
     mock_transcribe.assert_called_once_with("test_audio.wav", language="lt")
