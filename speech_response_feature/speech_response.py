@@ -13,7 +13,7 @@ def say_formatted_response(is_found, item_to_search, shop_name, price):
         euro_case, cent_case, shop_case = form_price_and_shop_cases(price_value, shop_name)
         speech_response = f"Preke, {item_to_search}, pigiausia, {shop_case}, {int(price_value)} {euro_case}, {round((price_value % 1) * 100)} {cent_case}"
     else:
-        speech_response = f"Prekė {item_to_search} nerasta sfasf af saf sa fs f"
+        speech_response = f"Prekė {item_to_search} nerasta"
     
     speak(speech_response)
 

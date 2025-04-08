@@ -10,6 +10,8 @@ def test_rimi_scraped_speech_response():
     result = scraper.scrape_price()
     assert result is not None, f"{item_name} not found in {shop_name}"
 
+    assert item_name[:-3] in result.item_name.lower(), f"'pomidorai' not found in result item name: {result.item_name}"
+ 
     start_time = time.time()
     say_formatted_response(
         is_found=True,
