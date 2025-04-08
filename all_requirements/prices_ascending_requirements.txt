@@ -1,4 +1,0 @@
-streamlit
-pytest
-bs4
-fuzzywuzzy
