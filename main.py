@@ -33,13 +33,10 @@ def perform_scraping(item_name, shops):
     sorted_results = sorted(results.items(), key=lambda x: x[1])
     return sorted_results, voice_responses
 
-
-# Initialize app
 app = VoiceRecognizer()
 shops = ["Rimi", "Maxima", "IKI"]
 st.title("🎙️ Pigiausių prekių paieška balsu")
 
-# Initialize session state
 if "recognized_text" not in st.session_state:
     st.session_state.recognized_text = ""
 if "scrape_result" not in st.session_state:
@@ -50,9 +47,12 @@ if "clear_after_response" not in st.session_state:
     st.session_state.clear_after_response = False
 if "last_response_time" not in st.session_state:
     st.session_state.last_response_time = None
-
 if "theme" not in st.session_state:
     st.session_state.theme = "light"
+if "from_voice_input" not in st.session_state:
+    st.session_state.from_voice_input = False
+if "last_input_method" not in st.session_state:
+    st.session_state.last_input_method = "Įvesti ranka"
 
 theme_toggle = st.toggle("🌙 Perjungti temą", key="theme_toggle")
 
@@ -60,32 +60,17 @@ if theme_toggle:
     st.session_state.theme = "dark"
 else:
     st.session_state.theme = "light"
-
-# Apply styles based on theme
-if "theme" not in st.session_state:
-    st.session_state.theme = "light"
-
 theme = st.session_state.theme
 
-# Tema: šviesi arba tamsi
 if theme == "dark":
     st.markdown("""
         <style>
         body, .stApp{
             background-color: #0E1117;
-            color: #31333F;  /* Light gray text color */
+            color: #31333F;
             h1{
                 color: #FAFAFA;
             }
-        }
-        div[role="radiogroup"] > label {
-            color: red !important;
-        }
-        div[role="radiogroup"] > label[data-selected="true"] {
-            background-color: red !important;
-            color: white !important;
-            border-radius: 5px;
-            padding: 0.2em 0.5em;
         }
         h1, p{
             color: #FAFAFA;
@@ -95,7 +80,6 @@ if theme == "dark":
                 color: #31333F;   
             }
         }
-        
         </style>
     """, unsafe_allow_html=True)
 else:
@@ -105,23 +89,15 @@ else:
             background-color: #FFFFFF;
             color: #31333F;
         }
-        div[role="radiogroup"] > label {
-            color: red !important;
-        }
-        div[role="radiogroup"] > label[data-selected="true"] {
-            background-color: red !important;
-            color: white !important;
-            border-radius: 5px;
-            padding: 0.2em 0.5em;
-        }
         </style>
     """, unsafe_allow_html=True)
 
-
-
-
-# Choose input method
 input_method = st.radio("Pasirinkite įvedimo būdą:", ("Įvesti ranka", "Įrašyti balsu"))
+
+if input_method != st.session_state.last_input_method:
+    st.session_state.clear()
+    st.session_state.last_input_method = input_method
+    st.rerun()
 
 if input_method == "Įvesti ranka":
     with st.form("manual_input_form"):
@@ -133,17 +109,18 @@ if input_method == "Įvesti ranka":
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(new_input, shops)
         st.session_state.clear_after_response = True
         st.session_state.last_response_time = time.time()
-
+        st.session_state.from_voice_input = False
 
 elif st.button("🎤 Pasakyti prekę"):
     st.session_state.recognized_text = app.recognize_speech_whisper()
+    st.session_state.from_voice_input = True
+
     if st.session_state.recognized_text:
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(st.session_state.recognized_text, shops)
         st.session_state.clear_after_response = True
         st.session_state.last_response_time = time.time()
 
-# Show results
-if st.session_state.recognized_text:
+if st.session_state.from_voice_input and st.session_state.recognized_text:
     edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
     if edited_text != st.session_state.recognized_text:
         st.session_state.recognized_text = edited_text
@@ -157,7 +134,6 @@ for result in st.session_state.scrape_result:
     else:
         st.markdown(result[0], unsafe_allow_html=True)
 
-# Say voice response
 if st.session_state.voice_responses:
     cheapest_response = None
     for response in st.session_state.voice_responses:
@@ -169,9 +145,3 @@ if st.session_state.voice_responses:
         say_formatted_response(*cheapest_response)
     else:
         say_formatted_response(False, st.session_state.recognized_text, "", None)
-
-# Clear after delay
-if st.session_state.clear_after_response:
-    if time.time() - st.session_state.last_response_time > 10:
-        st.session_state.clear()
-        st.rerun()
