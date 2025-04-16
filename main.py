@@ -57,7 +57,7 @@ if input_method == "Įvesti ranka":
     if st.session_state.recognized_text:
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(st.session_state.recognized_text, shops)
 
-if st.button("🎤 Pasakyti prekę"):
+elif st.button("🎤 Pasakyti prekę"):
     st.session_state.recognized_text = app.recognize_speech_whisper()
     if st.session_state.recognized_text:
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(st.session_state.recognized_text, shops)
