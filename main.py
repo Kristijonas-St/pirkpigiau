@@ -95,8 +95,16 @@ else:
 input_method = st.radio("Pasirinkite įvedimo būdą:", ("Įvesti ranka", "Įrašyti balsu"))
 
 if input_method != st.session_state.last_input_method:
-    st.session_state.clear()
-    st.session_state.last_input_method = input_method
+    current_theme = st.session_state.theme
+    st.session_state.update({
+        "recognized_text": "",
+        "scrape_result": [],
+        "voice_responses": [],
+        "clear_after_response": False,
+        "from_voice_input": False,
+        "last_input_method": input_method,
+        "theme": current_theme,
+    })
     st.rerun()
 
 if input_method == "Įvesti ranka":
