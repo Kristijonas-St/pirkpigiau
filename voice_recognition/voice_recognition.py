@@ -5,7 +5,6 @@ import tempfile
 import wave
 import whisper
 
-st.info("Įkeliama balso atpažinimo funkcija (gali užtrukti kelias sekundes)")
 model = whisper.load_model("small")
 
 class VoiceRecognizer:

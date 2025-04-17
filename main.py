@@ -53,13 +53,17 @@ if "from_voice_input" not in st.session_state:
     st.session_state.from_voice_input = False
 if "last_input_method" not in st.session_state:
     st.session_state.last_input_method = "Įvesti ranka"
+if "theme_changed" not in st.session_state:
+    st.session_state.theme_changed = False
 
 theme_toggle = st.toggle("🌙 Perjungti temą", key="theme_toggle")
 
-if theme_toggle:
+if theme_toggle and st.session_state.theme != "dark":
     st.session_state.theme = "dark"
-else:
+    st.session_state.theme_changed = True
+elif not theme_toggle and st.session_state.theme != "light":
     st.session_state.theme = "light"
+    st.session_state.theme_changed = True
 theme = st.session_state.theme
 
 if theme == "dark":
@@ -105,6 +109,11 @@ if input_method != st.session_state.last_input_method:
         "last_input_method": input_method,
         "theme": current_theme,
     })
+    if not st.session_state.theme_changed:
+        st.session_state.has_said_response = False
+
+    st.session_state.theme_changed = False
+
     st.rerun()
 
 if input_method == "Įvesti ranka":
@@ -118,6 +127,7 @@ if input_method == "Įvesti ranka":
         st.session_state.clear_after_response = True
         st.session_state.last_response_time = time.time()
         st.session_state.from_voice_input = False
+        st.session_state.has_said_response = False
 
 elif st.button("🎤 Pasakyti prekę"):
     st.session_state.recognized_text = app.recognize_speech_whisper()
@@ -127,6 +137,7 @@ elif st.button("🎤 Pasakyti prekę"):
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(st.session_state.recognized_text, shops)
         st.session_state.clear_after_response = True
         st.session_state.last_response_time = time.time()
+        st.session_state.has_said_response = False
 
 if st.session_state.from_voice_input and st.session_state.recognized_text:
     edited_text = st.text_input("Atpažintas žodis:", value=st.session_state.recognized_text)
@@ -135,6 +146,7 @@ if st.session_state.from_voice_input and st.session_state.recognized_text:
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(edited_text, shops)
         st.session_state.clear_after_response = True
         st.session_state.last_response_time = time.time()
+        st.session_state.has_said_response = False
 
 for result in st.session_state.scrape_result:
     if result[1] != float('inf'):
@@ -142,14 +154,21 @@ for result in st.session_state.scrape_result:
     else:
         st.markdown(result[0], unsafe_allow_html=True)
 
-if st.session_state.voice_responses:
-    cheapest_response = None
-    for response in st.session_state.voice_responses:
-        if response[0]:
-            if cheapest_response is None or float(response[3]) < float(cheapest_response[3]):
-                cheapest_response = response
+if st.session_state.voice_responses and not st.session_state.has_said_response:
+    if not st.session_state.theme_changed:
+        cheapest_response = None
+        for response in st.session_state.voice_responses:
+            if response[0]:
+                if cheapest_response is None or float(response[3]) < float(cheapest_response[3]):
+                    cheapest_response = response
 
-    if cheapest_response:
-        say_formatted_response(*cheapest_response)
+        if cheapest_response:
+            say_formatted_response(*cheapest_response)
+        else:
+            say_formatted_response(False, st.session_state.recognized_text, "", None)
+
+        st.session_state.has_said_response = True
+        st.session_state.theme_changed = False
     else:
-        say_formatted_response(False, st.session_state.recognized_text, "", None)
+        st.session_state.has_said_response = False
+        st.session_state.theme_changed = False
