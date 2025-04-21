@@ -43,6 +43,8 @@ if "scrape_result" not in st.session_state:
     st.session_state.scrape_result = []
 if "voice_responses" not in st.session_state:
     st.session_state.voice_responses = []
+if "favorites" not in st.session_state:
+    st.session_state.favorites = []
 if "clear_after_response" not in st.session_state:
     st.session_state.clear_after_response = False
 if "last_response_time" not in st.session_state:
@@ -155,11 +157,14 @@ if st.session_state.from_voice_input and st.session_state.recognized_text:
         st.session_state.has_said_response = False
         st.session_state.skip_voice_response_once = False
 
-for result in st.session_state.scrape_result:
+for i, result in enumerate(st.session_state.scrape_result):
+    item_text = f"{result[0]}{result[1]}€" if result[1] != float('inf') else result[0]
+    st.markdown(item_text, unsafe_allow_html=True)
+
     if result[1] != float('inf'):
-        st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
-    else:
-        st.markdown(result[0], unsafe_allow_html=True)
+        if st.button("❤️ Į patikusias", key=f"fav-{i}"):
+            st.session_state.favorites.append(item_text)
+            st.success("Prekė pridėta į patikusias!")
 
 if st.session_state.voice_responses and not st.session_state.has_said_response:
     if st.session_state.skip_voice_response_once:
@@ -178,3 +183,8 @@ if st.session_state.voice_responses and not st.session_state.has_said_response:
             say_formatted_response(False, st.session_state.recognized_text, "", None)
 
         st.session_state.has_said_response = True
+
+if st.session_state.favorites:
+    st.subheader("🧺 Patikusios prekės:")
+    for favorite in st.session_state.favorites:
+        st.markdown(f"- {favorite}", unsafe_allow_html=True)
