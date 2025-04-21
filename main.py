@@ -47,6 +47,8 @@ if "scrape_result" not in st.session_state:
     st.session_state.scrape_result = ""
 if "voice_responses" not in st.session_state:
     st.session_state.voice_responses = []
+if "favorites" not in st.session_state:
+    st.session_state.favorites = []
 
 input_method = st.radio("Pasirinkite įvedimo būdą:", ("Įvesti ranka", "Įrašyti balsu"))
 
@@ -68,11 +70,15 @@ if st.session_state.recognized_text:
         st.session_state.recognized_text = edited_text
         st.session_state.scrape_result, st.session_state.voice_responses = perform_scraping(edited_text, shops)
 
-for result in st.session_state.scrape_result:
+for i, result in enumerate(st.session_state.scrape_result):
+    item_text = f"{result[0]}{result[1]}€" if result[1] != float('inf') else result[0]
+    st.markdown(item_text, unsafe_allow_html=True)
+
     if result[1] != float('inf'):
-        st.markdown(f"{result[0]}{result[1]}€", unsafe_allow_html=True)
-    else:
-        st.markdown(f"{result[0]}", unsafe_allow_html=True)
+        if st.button("❤️ Į patikusias", key=f"fav-{i}"):
+            st.session_state.favorites.append(item_text)
+            st.success("Prekė pridėta į patikusias!")
+
 
 if st.session_state.voice_responses:
 
@@ -87,5 +93,8 @@ if st.session_state.voice_responses:
     else:
         say_formatted_response(False, st.session_state.recognized_text, "", None)
 
-
+if st.session_state.favorites:
+    st.subheader("🧺 Patikusios prekės:")
+    for favorite in st.session_state.favorites:
+        st.markdown(f"- {favorite}", unsafe_allow_html=True)
 
